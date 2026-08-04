@@ -605,7 +605,7 @@ function PlayerCard({ player: p, maxGoals, maxWins, maxGames }) {
       </div>
 
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
-        <StatBadge label="Goals"  value={p.total_goals}                  color="#f59e0b" />
+        <StatBadge label="Goals"  value={p.raw_goals != null ? p.raw_goals : p.total_goals} sub={(p.own_goals||0) > 0 ? `${p.own_goals} OG` : undefined} color="#f59e0b" />
         <StatBadge label="Wins"   value={p.total_wins} sub={`${losses}L${p.total_draws?` · ${p.total_draws}D`:""}`} color="#34d399" />
         <StatBadge label="Win %"  value={`${p.win_pct}%`}                color="#60a5fa" />
         <StatBadge label="Games"  value={p.games_attended} sub="attended" color="#a78bfa" />
