@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Analytics } from "@vercel/analytics/react";
 
 const SEEDED_GAMES = [
   {date:"2025-12-04",winningTeam:"White",redTeam:["Andy", "Ben", "Brian", "Conor", "Crosby", "Gordon", "Liam", "Sam P", "Tommo", "Tony"],whiteTeam:["Ade", "Alex", "Elliot C", "John S", "Jon R", "Miles", "Paul", "Rob", "Spud"],scorers:{"Ade": 1, "Alex": 1, "Gordon": 1, "John S": 2, "Miles": 1, "Tony": 1},gf:0,ga:0},
@@ -3379,6 +3380,7 @@ export default function App() {
         {mode === "compare" && <CompareView selected={compareList} onToggle={toggleCompare} players={PLAYERS} />}
         {mode === "registry" && <RegistryView onGameSaved={handleGameSaved} savedGames={savedGames} setSavedGames={setSavedGames} settings={settings} updateSettings={updateSettings} />}
       </div>
+      <Analytics />
     </div>
   );
 }
