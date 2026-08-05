@@ -248,6 +248,13 @@ const ratingAsOf = (name, beforeDate, allGames, profiles, windowSize = 6) => {
   return compositeRating(prof, form.winPct);
 };
 
+// Global flag for hiding ratings (set from admin settings). A simple module-level
+// switch so any component can respect it without prop-drilling everywhere.
+let HIDE_RATINGS = false;
+const setHideRatings = (v) => { HIDE_RATINGS = v; };
+// Wrap a rating for display — returns "–" when ratings are hidden
+const rDisp = (v) => HIDE_RATINGS ? "–" : v;
+
 const COMPARE_COLORS = ["#f59e0b", "#34d399", "#f87171", "#a78bfa"];
 
 // ─── STORAGE ABSTRACTION (works in Claude artifacts + deployed apps) ─────────
@@ -3150,6 +3157,26 @@ export default function App() {
       } catch(e) {}
     })();
   }, []);
+  // ── App-wide display settings (admin-controlled) ──────────────────────────
+  const DEFAULT_SETTINGS = {
+    hideRatings: false,
+    hiddenTabs: { insights: true }, // insights off by default (year-end reveal)
+  };
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await Storage.get("thunade_settings");
+        if (stored) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
+      } catch(e) {}
+    })();
+  }, []);
+  const updateSettings = async (next) => {
+    setSettings(next);
+    await Storage.set("thunade_settings", JSON.stringify(next));
+  };
+  // Keep the global hide-ratings flag in sync with settings
+  setHideRatings(!!settings.hideRatings);
   useEffect(() => {
     (async () => {
       try {
@@ -3167,7 +3194,6 @@ export default function App() {
       } catch(e) {}
     })();
   }, []);
-
   // Compute all stats dynamically from seeded + logged games
   // A logged game overrides a seeded game for the same date ONLY if it's valid
   // (both teams have players). This prevents a broken stored entry from hiding
