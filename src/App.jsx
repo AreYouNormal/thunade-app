@@ -1372,6 +1372,7 @@ function RegistryView({ onGameSaved, savedGames, setSavedGames }) {
         {btn("👤 Players",  view==="players", () => setView("players"), "#34d399")}
         {btn("⭐ Profiles", view==="profiles", () => setView("profiles"), "#f59e0b")}
         {btn("💾 Backup",   view==="backup",   () => setView("backup"), "#34d399")}
+        {btn("⚙️ Settings", view==="settings", () => setView("settings"), "#a78bfa")}
       </div>
 
       {view === "form" && (
