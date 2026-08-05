@@ -452,7 +452,7 @@ function TeamPanel({ teamGames: TEAM_GAMES, players: PLAYERS, profiles, allGames
                     {g.isDraw?"🤝":g.winner==="Red"?"🔴":"⚪"} {g.gf}-{g.ga}
                   </span>
                   <span style={{ flex:1, fontSize:11, color:"#6b7280" }}>
-                    {g.isDraw ? `Red ⭐${g.winRating} vs White ⭐${g.loseRating}` : `Winner ⭐${g.winRating} vs ⭐${g.loseRating}`}
+                    {g.isDraw ? `Red ⭐${rDisp(g.winRating)} vs White ⭐${rDisp(g.loseRating)}` : `Winner ⭐${rDisp(g.winRating)} vs ⭐${rDisp(g.loseRating)}`}
                   </span>
                   {g.isDraw ? (
                     <span style={{ fontSize:11, color:"#94a3b8", fontWeight:700,
@@ -1141,7 +1141,7 @@ const PLAYER_NAMES = [
   "Ade","Alex","Andy","Ben","Brian","Brian Mc","Callum","Chris","Conor","Crosby","Crosby's Bro","Elliot C","Gordon","Green","Harry","Hase","Jack","Joe","John D","John S","Jon R","Jonah","Jude","Kofi","Liam","Mark","Matty","Miles","Paul","Paul Mc","Pring","Rob","Roy","Sam P","Sam R","Sam T","Shaun","Spud","Ste","Tommo","Tony","Will","Zak"
 ];
 
-function RegistryView({ onGameSaved, savedGames, setSavedGames }) {
+function RegistryView({ onGameSaved, savedGames, setSavedGames, settings, updateSettings }) {
   const [unlocked, setUnlocked]   = useState(false);
   const [pwInput, setPwInput]     = useState("");
   const [pwError, setPwError]     = useState(false);
@@ -1649,6 +1649,67 @@ function RegistryView({ onGameSaved, savedGames, setSavedGames }) {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {view === "settings" && (
+        <div>
+          <div style={{ fontSize:11, color:"#4b5563", marginBottom:16, fontFamily:"monospace" }}>
+            CONTROL WHAT EVERYONE SEES. CHANGES SAVE AUTOMATICALLY AND APPLY TO ALL VIEWERS.
+          </div>
+
+          {/* Hide ratings toggle */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+            background:"rgba(255,255,255,0.02)", border:"1px solid #2d3748", borderRadius:12,
+            padding:"14px 16px", marginBottom:12 }}>
+            <div style={{ flex:1, paddingRight:12 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:"#f1f5f9", marginBottom:2 }}>⭐ Hide player ratings</div>
+              <div style={{ fontSize:11, color:"#6b7280" }}>Hides the star rating numbers everywhere. Teams are still balanced using them behind the scenes.</div>
+            </div>
+            <button onClick={() => updateSettings({ ...settings, hideRatings: !settings.hideRatings })} style={{
+              width:52, height:30, borderRadius:16, border:"none", cursor:"pointer", flexShrink:0,
+              background: settings.hideRatings ? "#a78bfa" : "#374151", position:"relative", transition:"background 0.2s",
+            }}>
+              <div style={{ position:"absolute", top:3, left: settings.hideRatings ? 25 : 3,
+                width:24, height:24, borderRadius:"50%", background:"#fff", transition:"left 0.2s" }}/>
+            </button>
+          </div>
+
+          {/* Tab visibility */}
+          <div style={{ fontSize:11, color:"#4b5563", textTransform:"uppercase", letterSpacing:"0.08em", marginTop:20, marginBottom:8, fontFamily:"monospace" }}>Visible Tabs</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            {[
+              { id:"team", label:"👕 Team" },
+              { id:"form", label:"📈 Form" },
+              { id:"h2h", label:"⚔️ H2H" },
+              { id:"insights", label:"💡 Insights" },
+              { id:"rankings", label:"🏆 Rankings" },
+              { id:"compare", label:"📊 Compare" },
+              { id:"pick", label:"🎲 Pick" },
+            ].map(t => {
+              const hidden = settings.hiddenTabs?.[t.id];
+              return (
+                <div key={t.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                  background:"rgba(255,255,255,0.02)", border:"1px solid #2d3748", borderRadius:10, padding:"10px 14px" }}>
+                  <span style={{ fontSize:14, color: hidden ? "#4b5563" : "#f1f5f9", fontWeight:600 }}>{t.label}{hidden && <span style={{ fontSize:10, color:"#6b7280", marginLeft:8 }}>hidden</span>}</span>
+                  <button onClick={() => {
+                    const nextTabs = { ...(settings.hiddenTabs||{}) };
+                    if (hidden) delete nextTabs[t.id]; else nextTabs[t.id] = true;
+                    updateSettings({ ...settings, hiddenTabs: nextTabs });
+                  }} style={{
+                    width:52, height:30, borderRadius:16, border:"none", cursor:"pointer", flexShrink:0,
+                    background: hidden ? "#374151" : "#34d399", position:"relative", transition:"background 0.2s",
+                  }}>
+                    <div style={{ position:"absolute", top:3, left: hidden ? 3 : 25,
+                      width:24, height:24, borderRadius:"50%", background:"#fff", transition:"left 0.2s" }}/>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ fontSize:11, color:"#6b7280", marginTop:12, fontStyle:"italic" }}>
+            💡 Tip: keep Insights hidden through the season, then switch it on at the end of year for the big reveal. My Stats and Log always stay visible.
           </div>
         </div>
       )}
@@ -2673,7 +2734,7 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                   border: onRed ? "1px solid rgba(239,68,68,0.25)" : onWhite ? "1px solid rgba(232,232,232,0.15)" : "1px solid #1f2937",
                 }}>
                   <span style={{ flex:1, fontSize:13, color: onRed?"#f87171":onWhite?"#e2e8f0":"#6b7280" }}>{name}</span>
-                  <span style={{ fontSize:10, color:"#f59e0b", marginRight:4 }}>⭐{rating}</span>
+                  <span style={{ fontSize:10, color:"#f59e0b", marginRight:4 }}>⭐{rDisp(rating)}</span>
                   <button onClick={() => toggleManual(name,"red")} style={{
                     padding:"3px 10px", borderRadius:10, cursor:"pointer", fontSize:11, fontWeight:700,
                     border: onRed ? "2px solid #ef4444" : "1px solid #374151",
@@ -2705,13 +2766,13 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                   {manualRed.map(n => (
                     <div key={n} style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                       <span style={{ fontSize:12, color:"#f1f5f9" }}>{n}</span>
-                      <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{getRating(n)}</span>
+                      <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rDisp(getRating(n))}</span>
                     </div>
                   ))}
                   {manualRed.length > 0 && (
                     <div style={{ marginTop:8, paddingTop:6, borderTop:"1px solid rgba(239,68,68,0.2)",
                       fontSize:12, color:"#f87171", fontWeight:700 }}>
-                      Avg: ⭐{teamAvgRating(manualRed)}
+                      Avg: ⭐{rDisp(teamAvgRating(manualRed))}
                     </div>
                   )}
                 </div>
@@ -2720,13 +2781,13 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                   {manualWhite.map(n => (
                     <div key={n} style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                       <span style={{ fontSize:12, color:"#f1f5f9" }}>{n}</span>
-                      <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{getRating(n)}</span>
+                      <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rDisp(getRating(n))}</span>
                     </div>
                   ))}
                   {manualWhite.length > 0 && (
                     <div style={{ marginTop:8, paddingTop:6, borderTop:"1px solid rgba(232,232,232,0.1)",
                       fontSize:12, color:"#cbd5e1", fontWeight:700 }}>
-                      Avg: ⭐{teamAvgRating(manualWhite)}
+                      Avg: ⭐{rDisp(teamAvgRating(manualWhite))}
                     </div>
                   )}
                 </div>
@@ -2752,7 +2813,7 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                       {verdict.label}
                     </div>
                     <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
-                      <span style={{ fontSize:14, fontWeight:800, color:"#f87171", minWidth:34, textAlign:"right" }}>⭐{rr}</span>
+                      <span style={{ fontSize:14, fontWeight:800, color:"#f87171", minWidth:34, textAlign:"right" }}>⭐{rDisp(rr)}</span>
                       <div style={{ flex:1, height:8, background:"#1f2937", borderRadius:4, overflow:"hidden", position:"relative" }}>
                         <div style={{ position:"absolute", left:0, top:0, height:"100%", width:"50%", background:"#374151", borderRadius:4 }}/>
                         <div style={{
@@ -2761,7 +2822,7 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                           background:`linear-gradient(90deg,#ef4444,#ef444480)`, borderRadius:4, transition:"width 0.4s"
                         }}/>
                       </div>
-                      <span style={{ fontSize:14, fontWeight:800, color:"#e2e8f0", minWidth:34 }}>⭐{rw}</span>
+                      <span style={{ fontSize:14, fontWeight:800, color:"#e2e8f0", minWidth:34 }}>⭐{rDisp(rw)}</span>
                     </div>
                     <div style={{ fontSize:11, color:"#6b7280", textAlign:"center" }}>
                       {diff === 0 ? "Perfectly matched!" : `${stronger} stronger by ${diff} rating points`}
@@ -2898,13 +2959,13 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                     const prof = profiles?.[name] || {};
                     prof.gd = p.team_gd || 0;
                     const rating = compositeRating(prof, p.win_pct);
-                    return <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rating}</span>;
+                    return <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rDisp(rating)}</span>;
                   })()}
                   </div>
                 );
               })}
               <div style={{ marginTop:10, paddingTop:8, borderTop:"1px solid rgba(239,68,68,0.2)" }}>
-                <div style={{ fontSize:11, color:"#f87171" }}>Avg rating: <strong>⭐{teamWinPct(redTeam)}</strong></div>
+                <div style={{ fontSize:11, color:"#f87171" }}>Avg rating: <strong>⭐{rDisp(teamWinPct(redTeam))}</strong></div>
                 <div style={{ fontSize:11, color:"#6b7280" }}>Combined GD: <span style={{ color: teamGD(redTeam)>=0?"#34d399":"#f87171", fontWeight:700 }}>{teamGD(redTeam)>=0?"+":""}{teamGD(redTeam)}</span></div>
                 {(teamYouth(redTeam) > 0 || teamVets(redTeam) > 0) && (
                   <div style={{ fontSize:11, color:"#6b7280" }}>Age mix: {teamYouth(redTeam) > 0 && <span style={{ color:"#34d399" }}>{teamYouth(redTeam)} U25</span>}{teamYouth(redTeam) > 0 && teamVets(redTeam) > 0 && " · "}{teamVets(redTeam) > 0 && <span style={{ color:"#fb923c" }}>{teamVets(redTeam)} 45+</span>}</div>
@@ -2928,13 +2989,13 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                     const prof = profiles?.[name] || {};
                     prof.gd = p.team_gd || 0;
                     const rating = compositeRating(prof, p.win_pct);
-                    return <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rating}</span>;
+                    return <span style={{ fontSize:10, color:"#f59e0b" }}>⭐{rDisp(rating)}</span>;
                   })()}
                   </div>
                 );
               })}
               <div style={{ marginTop:10, paddingTop:8, borderTop:"1px solid rgba(232,232,232,0.1)" }}>
-                <div style={{ fontSize:11, color:"#cbd5e1" }}>Avg rating: <strong>⭐{teamWinPct(whiteTeam)}</strong></div>
+                <div style={{ fontSize:11, color:"#cbd5e1" }}>Avg rating: <strong>⭐{rDisp(teamWinPct(whiteTeam))}</strong></div>
                 <div style={{ fontSize:11, color:"#6b7280" }}>Combined GD: <span style={{ color: teamGD(whiteTeam)>=0?"#34d399":"#f87171", fontWeight:700 }}>{teamGD(whiteTeam)>=0?"+":""}{teamGD(whiteTeam)}</span></div>
                 {(teamYouth(whiteTeam) > 0 || teamVets(whiteTeam) > 0) && (
                   <div style={{ fontSize:11, color:"#6b7280" }}>Age mix: {teamYouth(whiteTeam) > 0 && <span style={{ color:"#34d399" }}>{teamYouth(whiteTeam)} U25</span>}{teamYouth(whiteTeam) > 0 && teamVets(whiteTeam) > 0 && " · "}{teamVets(whiteTeam) > 0 && <span style={{ color:"#fb923c" }}>{teamVets(whiteTeam)} 45+</span>}</div>
@@ -2961,7 +3022,7 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
             <div style={{ fontSize:11, color:"#4b5563", textTransform:"uppercase",
               letterSpacing:"0.08em", marginBottom:6, fontFamily:"monospace" }}>Balance Check</div>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontSize:12, color:"#f87171", minWidth:30, textAlign:"right" }}>⭐{teamWinPct(redTeam)}</span>
+              <span style={{ fontSize:12, color:"#f87171", minWidth:30, textAlign:"right" }}>⭐{rDisp(teamWinPct(redTeam))}</span>
               <div style={{ flex:1, height:6, background:"#1f2937", borderRadius:3, overflow:"hidden" }}>
                 <div style={{
                   height:"100%", borderRadius:3,
@@ -2970,7 +3031,7 @@ function TeamPickerView({ players: PLAYERS, profiles, allGames, roster }) {
                   transition:"width 0.4s",
                 }}/>
               </div>
-              <span style={{ fontSize:12, color:"#e2e8f0", minWidth:30 }}>⭐{teamWinPct(whiteTeam)}</span>
+              <span style={{ fontSize:12, color:"#e2e8f0", minWidth:30 }}>⭐{rDisp(teamWinPct(whiteTeam))}</span>
             </div>
             <div style={{ fontSize:11, color:"#4b5563", marginTop:4, textAlign:"center" }}>
               {Math.abs(teamWinPct(redTeam)-teamWinPct(whiteTeam)) <= 3
@@ -3158,6 +3219,7 @@ export default function App() {
       } catch(e) {}
     })();
   }, []);
+
   // ── App-wide display settings (admin-controlled) ──────────────────────────
   const DEFAULT_SETTINGS = {
     hideRatings: false,
@@ -3195,6 +3257,7 @@ export default function App() {
       } catch(e) {}
     })();
   }, []);
+
   // Compute all stats dynamically from seeded + logged games
   // A logged game overrides a seeded game for the same date ONLY if it's valid
   // (both teams have players). This prevents a broken stored entry from hiding
@@ -3271,7 +3334,9 @@ export default function App() {
           </div>
         </div>
         <div style={{ display:"flex", borderBottom:"1px solid #1f2937", overflowX:"auto", overflowY:"hidden", scrollbarWidth:"none", msOverflowStyle:"none", WebkitOverflowScrolling:"touch" }}>
-          {["player","team","form","h2h","insights","rankings","compare","pick","registry"].map(tab => (
+          {["player","team","form","h2h","insights","rankings","compare","pick","registry"]
+            .filter(tab => tab === "registry" || !settings.hiddenTabs?.[tab])
+            .map(tab => (
             <button key={tab} onClick={() => setMode(tab)} style={{
               padding:"9px 14px", border:"none", background:"transparent",
               color: mode === tab ? "#f59e0b" : "#6b7280", cursor:"pointer",
@@ -3312,7 +3377,7 @@ export default function App() {
         {mode === "insights" && <InsightsView players={PLAYERS} allGames={allGames} profiles={playerProfiles} />}
         {mode === "rankings" && <RankingsView players={PLAYERS} />}
         {mode === "compare" && <CompareView selected={compareList} onToggle={toggleCompare} players={PLAYERS} />}
-        {mode === "registry" && <RegistryView onGameSaved={handleGameSaved} savedGames={savedGames} setSavedGames={setSavedGames} />}
+        {mode === "registry" && <RegistryView onGameSaved={handleGameSaved} savedGames={savedGames} setSavedGames={setSavedGames} settings={settings} updateSettings={updateSettings} />}
       </div>
     </div>
   );
