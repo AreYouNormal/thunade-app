@@ -16,7 +16,7 @@ const SEEDED_GAMES = [
   {date:"2026-03-12",winningTeam:"Red",redTeam:["Crosby", "Elliot C", "Gordon", "Hase", "John D", "Jon R", "Kofi", "Mark", "Pring", "Roy"],whiteTeam:["Ade", "Brian", "Conor", "Crosby's Bro", "Green", "Liam", "Rob", "Sam T", "Shaun", "Spud"],scorers:{"Conor": 1, "Crosby": 1, "Gordon": 1},gf:0,ga:0},
   {date:"2026-03-19",winningTeam:"Red",redTeam:["Ade", "Ben", "Brian", "Callum", "Conor", "Crosby", "Hase", "Joe", "Sam T", "Spud", "Tommo"],whiteTeam:["Alex", "Elliot C", "Gordon", "Green", "John D", "Jon R", "Kofi", "Mark", "Paul Mc", "Pring", "Rob"],scorers:{"Joe": 1},gf:0,ga:0},
   {date:"2026-03-26",winningTeam:"White",redTeam:["Alex", "Ben", "Brian", "Crosby", "Green", "Harry", "Hase", "Liam", "Sam T", "Shaun", "Spud"],whiteTeam:["Ade", "Elliot C", "Gordon", "John D", "Jon R", "Kofi", "Mark", "Paul Mc", "Rob", "Roy", "Tommo"],scorers:{"Green": 1, "Roy": 1, "Tommo": 1},gf:0,ga:0},
-  {date:"2026-04-02",winningTeam:"Red",redTeam:["Alex", "Conor", "Crosby", "Elliot C", "Jon R", "Roy", "Shaun", "Spud", "Tommo"],whiteTeam:["Ade", "Brian", "Gordon", "Harry", "Jack", "Joe", "Paul Mc", "Pring", "Rob"],scorers:{"Roy": 1},gf:0,ga:0},
+  {date:"2026-04-02",winningTeam:"Red",redTeam:["Alex", "Conor", "Crosby", "Elliot C", "Jon R", "Roy", "Shaun", "Spud", "Tommo"],whiteTeam:["Ade", "Brian", "Gordon", "Harry", "Jack L", "Joe", "Paul Mc", "Pring", "Rob"],scorers:{"Roy": 1},gf:0,ga:0},
   {date:"2026-04-16",winningTeam:"White",redTeam:["Alex", "Brian", "Elliot C", "Green", "Jon R", "Mark", "Roy", "Sam P", "Shaun", "Spud"],whiteTeam:["Ade", "Callum", "Conor", "Gordon", "Harry", "Hase", "Paul Mc", "Pring", "Sam T", "Tommo"],scorers:{"Ade": 2, "Callum": 2, "Conor": 2, "Green": 2, "Roy": 3, "Sam P": 1, "Shaun": 1},gf:0,ga:0},
   {date:"2026-04-23",winningTeam:"Red",redTeam:["Brian", "Elliot C", "Gordon", "Green", "Harry", "Hase", "Pring", "Roy", "Shaun"],whiteTeam:["Ade", "Alex", "Callum", "Conor", "Mark", "Paul Mc", "Rob", "Sam T", "Spud"],scorers:{"Ade": 1, "Alex": 1, "Brian": 2, "Elliot C": 3, "Gordon": 1, "Harrison": 2, "Hase": 1, "Pring": 1, "Rob": 2, "Spud": 1},gf:0,ga:0},
   {date:"2026-04-30",winningTeam:"Draw",redTeam:["Elliot C", "Harry", "Shaun", "Brian", "Pring", "Rob", "Ade", "Conor", "Hase", "Tommo"],whiteTeam:["Joe", "Alex", "Tony", "Callum", "Jon R", "Mark", "Green", "Spud", "Paul Mc", "Sam T"],scorers:{"Elliot C": 1, "Callum": 1},ownGoals:{},gf:1,ga:1},
@@ -28,7 +28,7 @@ const SEEDED_GAMES = [
   {date:"2026-06-11",winningTeam:"White",redTeam:["Shaun", "Elliot C", "Sam P", "Andy", "Brian", "Miles", "Crosby", "Jon R", "Kofi", "Pring"],whiteTeam:["Brian Mc", "Jude", "Callum", "Ade", "Hase", "Mark", "Rob", "Sam T", "Green", "Tommo"],scorers:{"Callum": 1, "Ade": 1, "Mark": 1, "Sam P": 2, "Miles": 1},ownGoals:{"Andy": 1},gf:4,ga:3},
   {date:"2026-06-18",winningTeam:"Red",redTeam:["Ade", "Sam T", "Conor", "Crosby", "Kofi", "Hase", "Tommo", "Shaun"],whiteTeam:["Callum", "Miles", "Rob", "Brian", "Pring", "Green", "Roy", "Alex"],scorers:{"Ade": 3, "Sam T": 1, "Crosby": 2, "Callum": 1, "Roy": 2, "Alex": 1},ownGoals:{},gf:6,ga:4},
   {date:"2026-06-25",winningTeam:"Red",redTeam:["Brian Mc", "Rob", "Hase", "Sam T", "Jon R", "Tony", "Ade", "Joe", "Miles"],whiteTeam:["Elliot C", "Crosby", "Shaun", "Callum", "Mark", "Spud", "Brian", "Liam", "Green"],scorers:{"Hase": 1, "Ade": 3, "Joe": 3, "Mark": 1},ownGoals:{},gf:7,ga:1},
-  {date:"2026-07-02",winningTeam:"White",redTeam:["Ste", "Rob", "Sam T", "Liam", "Sam P", "Miles", "Mark", "Pring", "Jack", "Shaun"],whiteTeam:["Elliot C", "Hase", "Ben", "Joe", "Callum", "Crosby", "Jonah", "Andy", "Jon R", "Ade"],scorers:{"Ade": 3, "Callum": 2, "Jon R": 2, "Elliot C": 2, "Jonah": 1, "Crosby": 1, "Liam": 1},ownGoals:{},gf:11,ga:1},
+  {date:"2026-07-02",winningTeam:"White",redTeam:["Ste", "Rob", "Sam T", "Liam", "Sam P", "Miles", "Mark", "Pring", "Jack L", "Shaun"],whiteTeam:["Elliot C", "Hase", "Ben", "Joe", "Callum", "Crosby", "Jonah", "Andy", "Jon R", "Ade"],scorers:{"Ade": 3, "Callum": 2, "Jon R": 2, "Elliot C": 2, "Jonah": 1, "Crosby": 1, "Liam": 1},ownGoals:{},gf:11,ga:1},
 ];
 
 
@@ -170,7 +170,7 @@ const DEFAULT_PROFILES = {
   "Conor": { ageGroup: "u25" },
   "Elliot C": { ageGroup: "u25" },
   "Harry": { ageGroup: "u25" },
-  "Jack": { ageGroup: "u25" },
+  "Jack L": { ageGroup: "u25" },
   "Joe": { ageGroup: "u25" },
   "Jude": { ageGroup: "u25" },
   "Callum": { ageGroup: "u25" },
@@ -1138,7 +1138,7 @@ function CompareView({ selected, onToggle, players: PLAYERS }) {
 
 // ─── PLAYER NAMES (canonical list for registry) ────────────────────────────
 const PLAYER_NAMES = [
-  "Ade","Alex","Andy","Ben","Brian","Brian Mc","Callum","Chris","Conor","Crosby","Crosby's Bro","Elliot C","Gordon","Green","Harry","Hase","Jack","Joe","John D","John S","Jon R","Jonah","Jude","Kofi","Liam","Mark","Matty","Miles","Paul","Paul Mc","Pring","Rob","Roy","Sam P","Sam R","Sam T","Shaun","Spud","Ste","Tommo","Tony","Will","Zak"
+  "Ade","Alex","Andy","Ben","Brian","Brian Mc","Callum","Chris","Conor","Crosby","Crosby's Bro","Elliot C","Gordon","Green","Harry","Hase","Jack L","Joe","John D","John S","Jon R","Jonah","Jude","Kofi","Liam","Mark","Matty","Miles","Paul","Paul Mc","Pring","Rob","Roy","Sam P","Sam R","Sam T","Shaun","Spud","Ste","Tommo","Tony","Will","Zak"
 ];
 
 function RegistryView({ onGameSaved, savedGames, setSavedGames, settings, updateSettings }) {
