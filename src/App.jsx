@@ -277,10 +277,12 @@ const SUPABASE_READY = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.leng
 // the network is down (it syncs back up on the next successful save).
 const Storage = {
   async get(key) {
-    // Try the cloud first (shared source of truth)
+    // CLOUD IS THE SOURCE OF TRUTH. If Supabase is reachable, whatever it says
+    // wins — a stale local copy on this device must never override it.
     if (SUPABASE_READY) {
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.${key}&select=value`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.${key}&select=value&_cb=${Date.now()}`, {
+          cache: "no-store",
           headers: {
             apikey: SUPABASE_ANON_KEY,
             Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
@@ -290,15 +292,21 @@ const Storage = {
           const rows = await res.json();
           if (rows && rows.length > 0) {
             const val = rows[0].value;
-            // Cache locally for offline use
-            try { localStorage.setItem(key, val); } catch(e) {}
+            try { localStorage.setItem(key, val); } catch(e) {} // cache for offline
             return val;
           }
-          // No row yet in cloud — fall through to local
+          // Cloud reachable but has no row for this key yet.
+          // Return null so seeded defaults apply — do NOT fall back to a stale
+          // local copy (that's what caused old data to reappear).
+          return null;
         }
-      } catch(e) { /* network error — fall back to local cache */ }
+      } catch(e) {
+        // Genuine network failure — fall back to local cache so the app still
+        // works offline.
+        try { return localStorage.getItem(key); } catch(e2) { return null; }
+      }
     }
-    // Fallback: local cache (offline, or Supabase not configured yet)
+    // Supabase not configured — local only.
     try { return localStorage.getItem(key); } catch(e) { return null; }
   },
 
