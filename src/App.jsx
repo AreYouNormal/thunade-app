@@ -16,7 +16,8 @@ const SEEDED_GAMES = [
   {date:"2026-03-12",winningTeam:"Red",redTeam:["Crosby", "Elliot C", "Gordon", "Hase", "John D", "Jon R", "Kofi", "Mark", "Pring", "Roy"],whiteTeam:["Ade", "Brian", "Conor", "Crosby's Bro", "Green", "Liam", "Rob", "Sam T", "Shaun", "Spud"],scorers:{"Conor": 1, "Crosby": 1, "Gordon": 1},gf:0,ga:0},
   {date:"2026-03-19",winningTeam:"Red",redTeam:["Ade", "Ben", "Brian", "Callum", "Conor", "Crosby", "Hase", "Joe", "Sam T", "Spud", "Tommo"],whiteTeam:["Alex", "Elliot C", "Gordon", "Green", "John D", "Jon R", "Kofi", "Mark", "Paul Mc", "Pring", "Rob"],scorers:{"Joe": 1},gf:0,ga:0},
   {date:"2026-03-26",winningTeam:"White",redTeam:["Alex", "Ben", "Brian", "Crosby", "Green", "Harry", "Hase", "Liam", "Sam T", "Shaun", "Spud"],whiteTeam:["Ade", "Elliot C", "Gordon", "John D", "Jon R", "Kofi", "Mark", "Paul Mc", "Rob", "Roy", "Tommo"],scorers:{"Green": 1, "Roy": 1, "Tommo": 1},gf:0,ga:0},
-  {date:"2026-04-02",winningTeam:"Red",redTeam:["Alex", "Conor", "Crosby", "Elliot C", "Jon R", "Roy", "Shaun", "Spud", "Tommo"],whiteTeam:["Ade", "Brian", "Gordon", "Harry", "Jack L", "Joe", "Paul Mc", "Pring", "Rob"],scorers:{"Roy": 1},gf:0,ga:0},
+  {date:"2026-04-02",winningTeam:"Red",redTeam:["Alex", "Conor", "Crosby", "Elliot C", "Jon R", "Roy", "Shaun", "Spud", "Tommo"],whiteTeam:["Ade", "Brian", "Gordon", "Harry", "Jack", "Joe", "Paul Mc", "Pring", "Rob"],scorers:{"Roy": 1},gf:0,ga:0},
+  {date:"2026-04-09",winningTeam:"Red",redTeam:["Ben R", "Callum", "Crosby", "Elliot C", "Jack L", "Mark", "Pring", "Sam P", "Sam T", "Spud", "Tommo"],whiteTeam:["Ade", "Alex", "Ben", "Brian", "Gordon", "Hase", "Joe", "Jon R", "Roy", "Shaun", "Zak"],scorers:{"Pring": 1, "Sam P": 1},ownGoals:{},gf:2,ga:0},
   {date:"2026-04-16",winningTeam:"White",redTeam:["Alex", "Brian", "Elliot C", "Green", "Jon R", "Mark", "Roy", "Sam P", "Shaun", "Spud"],whiteTeam:["Ade", "Callum", "Conor", "Gordon", "Harry", "Hase", "Paul Mc", "Pring", "Sam T", "Tommo"],scorers:{"Ade": 2, "Callum": 2, "Conor": 2, "Green": 2, "Roy": 3, "Sam P": 1, "Shaun": 1},gf:0,ga:0},
   {date:"2026-04-23",winningTeam:"Red",redTeam:["Brian", "Elliot C", "Gordon", "Green", "Harry", "Hase", "Pring", "Roy", "Shaun"],whiteTeam:["Ade", "Alex", "Callum", "Conor", "Mark", "Paul Mc", "Rob", "Sam T", "Spud"],scorers:{"Ade": 1, "Alex": 1, "Brian": 2, "Elliot C": 3, "Gordon": 1, "Harrison": 2, "Hase": 1, "Pring": 1, "Rob": 2, "Spud": 1},gf:0,ga:0},
   {date:"2026-04-30",winningTeam:"Draw",redTeam:["Elliot C", "Harry", "Shaun", "Brian", "Pring", "Rob", "Ade", "Conor", "Hase", "Tommo"],whiteTeam:["Joe", "Alex", "Tony", "Callum", "Jon R", "Mark", "Green", "Spud", "Paul Mc", "Sam T"],scorers:{"Elliot C": 1, "Callum": 1},ownGoals:{},gf:1,ga:1},
@@ -29,6 +30,11 @@ const SEEDED_GAMES = [
   {date:"2026-06-18",winningTeam:"Red",redTeam:["Ade", "Sam T", "Conor", "Crosby", "Kofi", "Hase", "Tommo", "Shaun"],whiteTeam:["Callum", "Miles", "Rob", "Brian", "Pring", "Green", "Roy", "Alex"],scorers:{"Ade": 3, "Sam T": 1, "Crosby": 2, "Callum": 1, "Roy": 2, "Alex": 1},ownGoals:{},gf:6,ga:4},
   {date:"2026-06-25",winningTeam:"Red",redTeam:["Brian Mc", "Rob", "Hase", "Sam T", "Jon R", "Tony", "Ade", "Joe", "Miles"],whiteTeam:["Elliot C", "Crosby", "Shaun", "Callum", "Mark", "Spud", "Brian", "Liam", "Green"],scorers:{"Hase": 1, "Ade": 3, "Joe": 3, "Mark": 1},ownGoals:{},gf:7,ga:1},
   {date:"2026-07-02",winningTeam:"White",redTeam:["Ste", "Rob", "Sam T", "Liam", "Sam P", "Miles", "Mark", "Pring", "Jack L", "Shaun"],whiteTeam:["Elliot C", "Hase", "Ben", "Joe", "Callum", "Crosby", "Jonah", "Andy", "Jon R", "Ade"],scorers:{"Ade": 3, "Callum": 2, "Jon R": 2, "Elliot C": 2, "Jonah": 1, "Crosby": 1, "Liam": 1},ownGoals:{},gf:11,ga:1},
+  {date:"2026-07-09",winningTeam:"White",redTeam:["Ade", "Ben", "Callum", "Conor", "Green", "Joe", "Jon R", "Mark", "Pring", "Rob", "Tony"],whiteTeam:["Alex", "Andy", "Brian", "Elliot C", "Hase", "Jack L", "Kofi", "Miles", "Roy", "Sam T", "Shaun"],scorers:{"Kofi": 2, "Miles": 1, "Sam T": 1},ownGoals:{},gf:4,ga:0},
+  {date:"2026-07-16",winningTeam:"Draw",redTeam:["Brian Mc", "Hase", "Paul Mc", "Alex", "Tommo", "Sam P", "Rob", "Spud", "Andy", "Green", "Pring"],whiteTeam:["Conor", "Elliot C", "Ben", "Kofi", "Tony", "Callum", "Sam T", "Mark", "Miles", "Jon R", "Brian"],scorers:{"Sam P": 1, "Brian": 1},ownGoals:{},gf:1,ga:1},
+  {date:"2026-07-30",winningTeam:"Red",redTeam:["Conor", "Elliot C", "Green", "Harry", "Hase", "Jack L", "Mark", "Rob", "Spud", "Ste"],whiteTeam:["Alex", "Andy", "Brian Mc", "Callum", "Crosby", "Kieran", "Miles", "Nick", "Shaun", "Tommo"],scorers:{"Brian Mc": 1, "Conor": 2},ownGoals:{},gf:2,ga:1},
+  {date:"2026-08-06",winningTeam:"White",redTeam:["Brian", "Elliot C", "Jack R", "Kofi", "Mark", "Nick", "Pring", "Rob"],whiteTeam:["Alex", "Callum", "Conor", "Green", "Harry", "Jack L", "Jon R", "Shaun"],scorers:{"Callum": 2, "Conor": 1, "Elliot C": 1, "Green": 1, "Harry": 3, "Jack L": 1, "Kofi": 1, "Mark": 1},ownGoals:{},gf:8,ga:3},
+  {date:"2026-08-27",winningTeam:"Red",redTeam:["Brian", "Green", "Harry", "Jack L", "Joe", "Jon R", "Liam", "Sam T", "Will"],whiteTeam:["Elliot C", "John S", "Kofi", "Miles", "Pring", "Rob", "Shaun", "Smith", "Tony"],scorers:{"Elliot C": 2, "Harry": 2, "Jack L": 1, "Liam": 1},ownGoals:{},gf:4,ga:2},
 ];
 
 
@@ -170,7 +176,7 @@ const DEFAULT_PROFILES = {
   "Conor": { ageGroup: "u25" },
   "Elliot C": { ageGroup: "u25" },
   "Harry": { ageGroup: "u25" },
-  "Jack L": { ageGroup: "u25" },
+  "Jack": { ageGroup: "u25" },
   "Joe": { ageGroup: "u25" },
   "Jude": { ageGroup: "u25" },
   "Callum": { ageGroup: "u25" },
@@ -258,23 +264,62 @@ const rDisp = (v) => HIDE_RATINGS ? "–" : v;
 const COMPARE_COLORS = ["#f59e0b", "#34d399", "#f87171", "#a78bfa"];
 
 // ─── STORAGE ABSTRACTION (works in Claude artifacts + deployed apps) ─────────
+// ─── SUPABASE CONFIG ─────────────────────────────────────────────────────────
+// Paste your project's URL and anon key here (from Supabase → Settings → API).
+// These are safe to expose publicly (the anon key is designed for browser use).
+const SUPABASE_URL = "https://ebttkjfddegdaoblibjh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_YoT58qXkTVaQxubM_KQsxA_AOZPbovg";
+const SUPABASE_READY = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 20;
+
+// ─── SHARED CLOUD STORAGE (Supabase) ─────────────────────────────────────────
+// All devices read/write the SAME central table, so everyone shares one dataset.
+// localStorage is kept as an offline cache/fallback so the app still works if
+// the network is down (it syncs back up on the next successful save).
 const Storage = {
-  // Write to BOTH window.storage AND localStorage so data survives
-  // regardless of which environment the app runs in. Read prefers whichever
-  // has data, so a game saved in one place is never lost.
   async get(key) {
-    let wsVal = null, lsVal = null;
-    try { if (window.storage) { const r = await window.storage.get(key); wsVal = r ? r.value : null; } } catch(e) {}
-    try { lsVal = localStorage.getItem(key); } catch(e) {}
-    // Prefer the value that parses to the most games (most complete data)
-    const count = (v) => { try { const a = JSON.parse(v); return Array.isArray(a) ? a.length : (a ? 1 : 0); } catch(e) { return 0; } };
-    if (wsVal && lsVal) return count(wsVal) >= count(lsVal) ? wsVal : lsVal;
-    return wsVal || lsVal;
+    // Try the cloud first (shared source of truth)
+    if (SUPABASE_READY) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.${key}&select=value`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
+        if (res.ok) {
+          const rows = await res.json();
+          if (rows && rows.length > 0) {
+            const val = rows[0].value;
+            // Cache locally for offline use
+            try { localStorage.setItem(key, val); } catch(e) {}
+            return val;
+          }
+          // No row yet in cloud — fall through to local
+        }
+      } catch(e) { /* network error — fall back to local cache */ }
+    }
+    // Fallback: local cache (offline, or Supabase not configured yet)
+    try { return localStorage.getItem(key); } catch(e) { return null; }
   },
+
   async set(key, value) {
-    // Write to both, independently — a failure in one never blocks the other
-    try { if (window.storage) await window.storage.set(key, value); } catch(e) {}
+    // Always cache locally first (instant, offline-safe)
     try { localStorage.setItem(key, value); } catch(e) {}
+    // Then push to the shared cloud so everyone else sees it
+    if (SUPABASE_READY) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/app_data`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates", // upsert on the key
+          },
+          body: JSON.stringify({ key, value }),
+        });
+      } catch(e) { /* offline — local cache holds it; will re-sync when saved again */ }
+    }
   }
 };
 
@@ -1138,7 +1183,7 @@ function CompareView({ selected, onToggle, players: PLAYERS }) {
 
 // ─── PLAYER NAMES (canonical list for registry) ────────────────────────────
 const PLAYER_NAMES = [
-  "Ade","Alex","Andy","Ben","Brian","Brian Mc","Callum","Chris","Conor","Crosby","Crosby's Bro","Elliot C","Gordon","Green","Harry","Hase","Jack L","Joe","John D","John S","Jon R","Jonah","Jude","Kofi","Liam","Mark","Matty","Miles","Paul","Paul Mc","Pring","Rob","Roy","Sam P","Sam R","Sam T","Shaun","Spud","Ste","Tommo","Tony","Will","Zak"
+  "Ade","Alex","Andy","Ben","Ben R","Brian","Brian Mc","Callum","Chris","Conor","Crosby","Crosby's Bro","Elliot C","Gordon","Green","Harry","Hase","Jack","Jack L","Jack R","Joe","John D","John S","Jon R","Jonah","Jude","Kieran","Kofi","Liam","Mark","Matty","Miles","Nick","Paul","Paul Mc","Pring","Rob","Roy","Sam P","Sam R","Sam T","Shaun","Smith","Spud","Ste","Tommo","Tony","Will","Zak"
 ];
 
 function RegistryView({ onGameSaved, savedGames, setSavedGames, settings, updateSettings }) {
@@ -3189,14 +3234,25 @@ export default function App() {
   const [rankMode, setRankMode] = useState("goals");
   const [savedGames, setSavedGames] = useState([]);
 
-  // Load saved games on mount (works in Claude artifacts + deployed apps)
+  // Load saved games on mount, then poll the shared cloud so games logged by
+  // other people appear automatically within ~20s (no manual refresh needed).
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    const loadGames = async () => {
       try {
         const stored = await Storage.get("thunade_games");
-        if (stored) setSavedGames(JSON.parse(stored));
+        if (!cancelled && stored) {
+          const parsed = JSON.parse(stored);
+          setSavedGames(prev => {
+            // Only update if the cloud copy differs, to avoid needless re-renders
+            return JSON.stringify(prev) !== JSON.stringify(parsed) ? parsed : prev;
+          });
+        }
       } catch(e) {}
-    })();
+    };
+    loadGames();
+    const interval = setInterval(loadGames, 20000); // every 20 seconds
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   const handleGameSaved = (game) => {
