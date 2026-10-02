@@ -271,6 +271,10 @@ const SUPABASE_URL = "https://ebttkjfddegdaoblibjh.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_YoT58qXkTVaQxubM_KQsxA_AOZPbovg";
 const SUPABASE_READY = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 20;
 
+// Bumped on each deploy so devices (esp. iOS home-screen apps) force-refresh to
+// the newest code instead of showing a stale cached version.
+const APP_VERSION = "2026-10-02-1";
+
 // ─── SHARED CLOUD STORAGE (Supabase) ─────────────────────────────────────────
 // All devices read/write the SAME central table, so everyone shares one dataset.
 // localStorage is kept as an offline cache/fallback so the app still works if
@@ -3239,6 +3243,36 @@ function InsightsView({ players: PLAYERS, allGames, profiles }) {
 }
 
 export default function App() {
+  // ── Auto-update: register service worker + force refresh on new deploy ──────
+  useEffect(() => {
+    // Register the network-first service worker (controls caching on installed PWAs)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+    // Version check: if the deployed version differs from what's running, reload once.
+    (async () => {
+      try {
+        const res = await fetch("/version.json?t=" + Date.now(), { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          const latest = data.version;
+          const seen = localStorage.getItem("thunade_app_version");
+          if (latest && latest !== APP_VERSION && seen !== latest) {
+            // New version deployed — clear caches and reload to get fresh code.
+            localStorage.setItem("thunade_app_version", latest);
+            if ("caches" in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map((k) => caches.delete(k)));
+            }
+            window.location.reload(true);
+          } else if (latest) {
+            localStorage.setItem("thunade_app_version", latest);
+          }
+        }
+      } catch(e) { /* offline or no version file — carry on */ }
+    })();
+  }, []);
+
   const [mode, setMode] = useState("player");
   const [rankMode, setRankMode] = useState("goals");
   const [savedGames, setSavedGames] = useState([]);
