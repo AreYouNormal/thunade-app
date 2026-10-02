@@ -281,11 +281,12 @@ const Storage = {
     // wins — a stale local copy on this device must never override it.
     if (SUPABASE_READY) {
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.${key}&select=value&_cb=${Date.now()}`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_data?key=eq.${key}&select=value`, {
           cache: "no-store",
           headers: {
             apikey: SUPABASE_ANON_KEY,
             Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Cache-Control": "no-cache",
           },
         });
         if (res.ok) {
