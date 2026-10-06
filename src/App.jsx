@@ -194,10 +194,9 @@ const DEFAULT_PROFILES = {
 };
 
 const AGE_GROUPS = [
-  { id:"u25",  label:"Under 25",  modifier: 1.10 },  // youth bonus
-  { id:"25-35",label:"25–35",     modifier: 1.00 },  // prime
-  { id:"35-45",label:"35–45",     modifier: 0.92 },  // experienced
-  { id:"45+",  label:"45+",       modifier: 0.82 },  // veteran
+  { id:"u25",  label:"Under 25",  modifier: 1.08 },
+  { id:"25-45",label:"25–45",     modifier: 1.00 },
+  { id:"45+",  label:"45+",       modifier: 0.90 },
 ];
 
 // Compute composite player rating 0-100
