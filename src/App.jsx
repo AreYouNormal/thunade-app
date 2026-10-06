@@ -272,7 +272,7 @@ const SUPABASE_READY = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.leng
 
 // Bumped on each deploy so devices (esp. iOS home-screen apps) force-refresh to
 // the newest code instead of showing a stale cached version.
-const APP_VERSION = "2026-10-02-1";
+const APP_VERSION = "2026-10-02-2";
 
 // ─── SHARED CLOUD STORAGE (Supabase) ─────────────────────────────────────────
 // All devices read/write the SAME central table, so everyone shares one dataset.
