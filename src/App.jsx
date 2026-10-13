@@ -194,9 +194,9 @@ const DEFAULT_PROFILES = {
 };
 
 const AGE_GROUPS = [
-  { id:"u25",  label:"Under 25",  modifier: 1.08 },
-  { id:"25-45",label:"25–45",     modifier: 1.00 },
-  { id:"45+",  label:"45+",       modifier: 0.90 },
+  { id:"u25",  label:"Under 25",  modifier: 1.08 },  // youth nudge up
+  { id:"25-45",label:"25–45",     modifier: 1.00 },  // prime
+  { id:"45+",  label:"45+",       modifier: 0.90 },  // veteran nudge down
 ];
 
 // Compute composite player rating 0-100
@@ -208,7 +208,7 @@ const compositeRating = (profile, winPct) => {
   const winScore = (winPct / 100) * 25;
   const gdScore  = Math.min(Math.max((profile.gd || 0) + 50, 0), 100) / 100 * 10;
   const raw      = ability + fitness + winScore + gdScore;
-  const ageGroup = AGE_GROUPS.find(a => a.id === (profile.ageGroup || "25-35"));
+  const ageGroup = AGE_GROUPS.find(a => a.id === (profile.ageGroup || "25-45"));
   const modifier = ageGroup ? ageGroup.modifier : 1.0;
   return Math.round(raw * modifier);
 };
@@ -272,7 +272,7 @@ const SUPABASE_READY = SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.leng
 
 // Bumped on each deploy so devices (esp. iOS home-screen apps) force-refresh to
 // the newest code instead of showing a stale cached version.
-const APP_VERSION = "2026-10-02-2";
+const APP_VERSION = "2026-10-13-1";
 
 // ─── SHARED CLOUD STORAGE (Supabase) ─────────────────────────────────────────
 // All devices read/write the SAME central table, so everyone shares one dataset.
@@ -1659,10 +1659,10 @@ function RegistryView({ onGameSaved, savedGames, setSavedGames, settings, update
                       {AGE_GROUPS.map(ag => (
                         <button key={ag.id} onClick={() => saveProfile(name,"ageGroup",ag.id)} style={{
                           padding:"3px 10px", borderRadius:12, cursor:"pointer", fontSize:11,
-                          border: (p.ageGroup||"25-35")===ag.id ? "2px solid #a78bfa" : "1px solid #374151",
-                          background: (p.ageGroup||"25-35")===ag.id ? "rgba(167,139,250,0.15)" : "transparent",
-                          color: (p.ageGroup||"25-35")===ag.id ? "#a78bfa" : "#6b7280",
-                          fontWeight: (p.ageGroup||"25-35")===ag.id ? 700 : 400,
+                          border: (p.ageGroup||"25-45")===ag.id ? "2px solid #a78bfa" : "1px solid #374151",
+                          background: (p.ageGroup||"25-45")===ag.id ? "rgba(167,139,250,0.15)" : "transparent",
+                          color: (p.ageGroup||"25-45")===ag.id ? "#a78bfa" : "#6b7280",
+                          fontWeight: (p.ageGroup||"25-45")===ag.id ? 700 : 400,
                         }}>{ag.label}</button>
                       ))}
                     </div>
@@ -3241,6 +3241,319 @@ function InsightsView({ players: PLAYERS, allGames, profiles }) {
   );
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+//  SECRET EXTRAS SECTION
+//  Revealed by tapping the club shield badge 5 times.
+//  Tabs: How It Began (view-only lore) · Affiliations (view-only) ·
+//        Rolodex (admin-editable, Supabase) · Notes (feedback box, Supabase)
+// ════════════════════════════════════════════════════════════════════════════
+
+const EXTRAS_PW = "LegendAde93";
+
+// Shared little section-heading used across the extras views
+function ExtrasHeading({ children, sub }) {
+  return (
+    <div style={{ marginBottom:14 }}>
+      <div style={{ fontSize:20, fontWeight:800, color:"#f1f5f9",
+        fontFamily:"'Bebas Neue',Impact,sans-serif", letterSpacing:"0.05em" }}>{children}</div>
+      {sub && <div style={{ fontSize:12, color:"#6b7280", marginTop:2 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function PlaceholderBlock({ title, note }) {
+  return (
+    <div style={{ background:"#111827", border:"1px solid #1f2937", borderRadius:12, padding:"16px 18px", marginBottom:14 }}>
+      <div style={{ fontSize:13, fontWeight:800, color:"#f59e0b", letterSpacing:"0.04em", marginBottom:8, textTransform:"uppercase" }}>{title}</div>
+      <div style={{ fontSize:13, color:"#9ca3af", lineHeight:1.6, fontStyle:"italic" }}>{note}</div>
+    </div>
+  );
+}
+
+// ── How It Began ─────────────────────────────────────────────────────────────
+function HowItBeganView() {
+  return (
+    <div>
+      <ExtrasHeading sub="The story of ThuNFC — Thursday Night Football">📖 How It Began</ExtrasHeading>
+      <PlaceholderBlock title="⚽ The First Match" note="Coming soon — the story of where it all started." />
+      <PlaceholderBlock title="🔴⚪ Why Red v White" note="Coming soon — how we settled on the colours." />
+      <PlaceholderBlock title="⏳ Old Times" note="Coming soon — the early years and the legends of old." />
+      <PlaceholderBlock title="😷 Covid" note="Coming soon — how the game survived lockdown." />
+    </div>
+  );
+}
+
+// ── Affiliations ─────────────────────────────────────────────────────────────
+function AffiliationsView() {
+  return (
+    <div>
+      <ExtrasHeading sub="How the squad is connected">🔗 Affiliations</ExtrasHeading>
+      <PlaceholderBlock title="🤝 Who Brought Who" note="Coming soon — the chain of mates who brought mates." />
+      <PlaceholderBlock title="🏟️ Sunday League Links" note="Coming soon — the clubs and Sunday-league ties." />
+    </div>
+  );
+}
+
+// ── Rolodex (admin-editable, Supabase-backed) ───────────────────────────────
+function badgeFor(years) {
+  const y = Number(years) || 0;
+  if (y >= 20) return { label:"🌟 Golden Wonder", color:"#fbbf24" };
+  if (y >= 10) return { label:"🏆 Hall of Fame", color:"#f59e0b" };
+  return null;
+}
+
+function RolodexView() {
+  const [unlocked, setUnlocked] = React.useState(false);
+  const [pwInput, setPwInput] = React.useState("");
+  const [pwError, setPwError] = React.useState(false);
+  const [entries, setEntries] = React.useState([]);
+  const [loaded, setLoaded] = React.useState(false);
+  // edit form state
+  const blank = { name:"", years:"", email:"", job:"", fact:"" };
+  const [form, setForm] = React.useState(blank);
+  const [editIdx, setEditIdx] = React.useState(null);
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const stored = await Storage.get("thunade_rolodex");
+        if (stored) setEntries(JSON.parse(stored));
+      } catch(e) {}
+      setLoaded(true);
+    })();
+  }, []);
+
+  const persist = async (next) => {
+    setEntries(next);
+    await Storage.set("thunade_rolodex", JSON.stringify(next));
+  };
+
+  const checkPw = () => {
+    if (pwInput === EXTRAS_PW) { setUnlocked(true); setPwError(false); }
+    else { setPwError(true); setPwInput(""); }
+  };
+
+  const saveEntry = async () => {
+    const name = form.name.trim();
+    if (!name) return;
+    const entry = {
+      name,
+      years: form.years === "" ? "" : Number(form.years),
+      email: form.email.trim(),
+      job: form.job.trim(),
+      fact: form.fact.trim(),
+    };
+    let next;
+    if (editIdx !== null) { next = entries.slice(); next[editIdx] = entry; }
+    else { next = [...entries, entry]; }
+    next.sort((a,b) => a.name.localeCompare(b.name));
+    await persist(next);
+    setForm(blank); setEditIdx(null);
+  };
+
+  const editEntry = (i) => {
+    const e = entries[i];
+    setForm({ name:e.name, years:e.years===""?"":String(e.years), email:e.email||"", job:e.job||"", fact:e.fact||"" });
+    setEditIdx(i);
+  };
+
+  const deleteEntry = async (i) => {
+    if (!window.confirm(`Remove ${entries[i].name} from the Rolodex?`)) return;
+    const next = entries.filter((_,idx) => idx !== i);
+    await persist(next);
+    if (editIdx === i) { setForm(blank); setEditIdx(null); }
+  };
+
+  const fieldStyle = { background:"#1f2937", border:"1px solid #374151", borderRadius:8,
+    padding:"9px 12px", color:"#f9fafb", fontSize:13, outline:"none", width:"100%", boxSizing:"border-box" };
+
+  return (
+    <div>
+      <ExtrasHeading sub="Past & present players — every legend we can think of">📇 Rolodex</ExtrasHeading>
+
+      {/* Roll-call list (always visible) */}
+      {loaded && entries.length === 0 && (
+        <div style={{ fontSize:13, color:"#6b7280", fontStyle:"italic", marginBottom:16 }}>
+          No entries yet{unlocked ? " — add the first below." : "."}
+        </div>
+      )}
+      <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:24 }}>
+        {entries.map((e, i) => {
+          const badge = badgeFor(e.years);
+          return (
+            <div key={i} style={{ background:"#111827", border:"1px solid #1f2937", borderRadius:12, padding:"14px 16px" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10 }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                    <span style={{ fontSize:15, fontWeight:800, color:"#f1f5f9" }}>{e.name}</span>
+                    {e.years !== "" && e.years != null && (
+                      <span style={{ fontSize:11, color:"#9ca3af" }}>{e.years} yr{Number(e.years)===1?"":"s"}</span>
+                    )}
+                    {badge && (
+                      <span style={{ fontSize:11, fontWeight:700, color:badge.color, background:`${badge.color}1a`,
+                        border:`1px solid ${badge.color}55`, borderRadius:20, padding:"2px 9px" }}>{badge.label}</span>
+                    )}
+                  </div>
+                  {e.job && <div style={{ fontSize:12, color:"#cbd5e1", marginTop:5 }}>{e.job}</div>}
+                  {e.fact && <div style={{ fontSize:12, color:"#93c5fd", marginTop:5, fontStyle:"italic" }}>💡 Did you know… {e.fact}</div>}
+                  {e.email && (
+                    <div style={{ marginTop:6 }}>
+                      <a href={`mailto:${e.email}`} style={{ fontSize:12, color:"#34d399", textDecoration:"none" }}>✉️ {e.email}</a>
+                    </div>
+                  )}
+                </div>
+                {unlocked && (
+                  <div style={{ display:"flex", flexDirection:"column", gap:6, flexShrink:0 }}>
+                    <button onClick={() => editEntry(i)} style={{ fontSize:11, padding:"4px 10px", borderRadius:6, border:"1px solid #374151", background:"transparent", color:"#9ca3af", cursor:"pointer" }}>Edit</button>
+                    <button onClick={() => deleteEntry(i)} style={{ fontSize:11, padding:"4px 10px", borderRadius:6, border:"1px solid rgba(239,68,68,0.4)", background:"transparent", color:"#ef4444", cursor:"pointer" }}>Delete</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Admin editor */}
+      {!unlocked ? (
+        <div style={{ background:"#0f1620", border:"1px dashed #374151", borderRadius:12, padding:"18px", textAlign:"center" }}>
+          <div style={{ fontSize:12, color:"#6b7280", marginBottom:10 }}>🔒 Admin only — enter password to edit the Rolodex</div>
+          <input type="password" placeholder="Password..." value={pwInput}
+            onChange={e => { setPwInput(e.target.value); setPwError(false); }}
+            onKeyDown={e => e.key === "Enter" && checkPw()}
+            style={{ ...fieldStyle, maxWidth:260, textAlign:"center", border: pwError?"1px solid #ef4444":"1px solid #374151", marginBottom:10 }} />
+          {pwError && <div style={{ fontSize:11, color:"#ef4444", marginBottom:8 }}>Incorrect password</div>}
+          <div>
+            <button onClick={checkPw} style={{ padding:"9px 24px", borderRadius:8, border:"none", background:"linear-gradient(135deg,#ef4444,#cc2200)", color:"#fff", fontSize:13, fontWeight:800, cursor:"pointer" }}>UNLOCK</button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ background:"#0f1620", border:"1px solid #1f2937", borderRadius:12, padding:"18px" }}>
+          <div style={{ fontSize:13, fontWeight:800, color:"#34d399", marginBottom:14 }}>
+            {editIdx !== null ? "✏️ Editing entry" : "➕ Add a player"}
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            <input placeholder="Name" value={form.name} onChange={e => setForm({...form, name:e.target.value})} style={fieldStyle} />
+            <input type="number" placeholder="Years active (e.g. 12)" value={form.years} onChange={e => setForm({...form, years:e.target.value})} style={fieldStyle} />
+            <input type="email" placeholder="Email (optional)" value={form.email} onChange={e => setForm({...form, email:e.target.value})} style={fieldStyle} />
+            <input placeholder="Job / role (optional)" value={form.job} onChange={e => setForm({...form, job:e.target.value})} style={fieldStyle} />
+            <input placeholder="Did you know… (nickname / fun stat)" value={form.fact} onChange={e => setForm({...form, fact:e.target.value})} style={fieldStyle} />
+            <div style={{ fontSize:11, color:"#6b7280" }}>Badges auto-apply: 10+ yrs → 🏆 Hall of Fame · 20+ yrs → 🌟 Golden Wonder</div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button onClick={saveEntry} style={{ flex:1, padding:"10px", borderRadius:8, border:"none", background:"linear-gradient(135deg,#10b981,#059669)", color:"#fff", fontSize:13, fontWeight:800, cursor:"pointer" }}>
+                {editIdx !== null ? "Save changes" : "Add to Rolodex"}
+              </button>
+              {editIdx !== null && (
+                <button onClick={() => { setForm(blank); setEditIdx(null); }} style={{ padding:"10px 16px", borderRadius:8, border:"1px solid #374151", background:"transparent", color:"#9ca3af", fontSize:13, cursor:"pointer" }}>Cancel</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Notes (feedback box, Supabase-backed) ───────────────────────────────────
+function NotesView() {
+  const [entries, setEntries] = React.useState([]);
+  const [name, setName] = React.useState("");
+  const [text, setText] = React.useState("");
+  const [sent, setSent] = React.useState(false);
+  // admin delete
+  const [unlocked, setUnlocked] = React.useState(false);
+  const [pwInput, setPwInput] = React.useState("");
+  const [showPw, setShowPw] = React.useState(false);
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const stored = await Storage.get("thunade_notes");
+        if (stored) setEntries(JSON.parse(stored));
+      } catch(e) {}
+    })();
+  }, []);
+
+  const persist = async (next) => {
+    setEntries(next);
+    await Storage.set("thunade_notes", JSON.stringify(next));
+  };
+
+  const submit = async () => {
+    if (!text.trim()) return;
+    const entry = { name: name.trim() || "Anonymous", text: text.trim(), ts: Date.now() };
+    const next = [entry, ...entries];
+    await persist(next);
+    setName(""); setText("");
+    setSent(true); setTimeout(() => setSent(false), 3000);
+  };
+
+  const del = async (ts) => {
+    if (!window.confirm("Delete this note?")) return;
+    await persist(entries.filter(e => e.ts !== ts));
+  };
+
+  const fieldStyle = { background:"#1f2937", border:"1px solid #374151", borderRadius:8,
+    padding:"10px 12px", color:"#f9fafb", fontSize:13, outline:"none", width:"100%", boxSizing:"border-box" };
+
+  const fmt = (ts) => { try { return new Date(ts).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); } catch(e) { return ""; } };
+
+  return (
+    <div>
+      <ExtrasHeading sub="Please submit any feedback or suggestions — anything you'd like to see.">📝 Notes</ExtrasHeading>
+
+      <div style={{ background:"#0f1620", border:"1px solid #1f2937", borderRadius:12, padding:"18px", marginBottom:22 }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+          <input placeholder="Your name (optional)" value={name} onChange={e => setName(e.target.value)} style={fieldStyle} />
+          <textarea placeholder="Your feedback or suggestion…" value={text} onChange={e => setText(e.target.value)} rows={4}
+            style={{ ...fieldStyle, resize:"vertical", fontFamily:"inherit" }} />
+          <button onClick={submit} style={{ padding:"11px", borderRadius:8, border:"none",
+            background:"linear-gradient(135deg,#3b82f6,#2563eb)", color:"#fff", fontSize:13, fontWeight:800, cursor:"pointer" }}>
+            Submit
+          </button>
+          {sent && <div style={{ fontSize:12, color:"#34d399", textAlign:"center" }}>✓ Thanks — your note has been saved!</div>}
+        </div>
+      </div>
+
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+        <div style={{ fontSize:12, color:"#6b7280", textTransform:"uppercase", letterSpacing:"0.08em" }}>
+          {entries.length} note{entries.length===1?"":"s"}
+        </div>
+        {!unlocked && (
+          showPw ? (
+            <div style={{ display:"flex", gap:6 }}>
+              <input type="password" placeholder="Admin pw" value={pwInput}
+                onChange={e => setPwInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && (pwInput === EXTRAS_PW ? setUnlocked(true) : null)}
+                style={{ ...fieldStyle, width:120, padding:"5px 10px" }} />
+              <button onClick={() => pwInput === EXTRAS_PW && setUnlocked(true)} style={{ fontSize:11, padding:"4px 10px", borderRadius:6, border:"1px solid #374151", background:"transparent", color:"#9ca3af", cursor:"pointer" }}>OK</button>
+            </div>
+          ) : (
+            <button onClick={() => setShowPw(true)} style={{ fontSize:11, color:"#374151", background:"transparent", border:"none", cursor:"pointer" }}>admin</button>
+          )
+        )}
+      </div>
+
+      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+        {entries.map((e) => (
+          <div key={e.ts} style={{ background:"#111827", border:"1px solid #1f2937", borderRadius:12, padding:"13px 16px" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+              <span style={{ fontSize:13, fontWeight:800, color:"#f1f5f9" }}>{e.name}</span>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                <span style={{ fontSize:11, color:"#6b7280" }}>{fmt(e.ts)}</span>
+                {unlocked && (
+                  <button onClick={() => del(e.ts)} style={{ fontSize:11, padding:"2px 8px", borderRadius:6, border:"1px solid rgba(239,68,68,0.4)", background:"transparent", color:"#ef4444", cursor:"pointer" }}>Delete</button>
+                )}
+              </div>
+            </div>
+            <div style={{ fontSize:13, color:"#cbd5e1", lineHeight:1.5, whiteSpace:"pre-wrap" }}>{e.text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // ── Auto-update: register service worker + force refresh on new deploy ──────
   useEffect(() => {
@@ -3276,6 +3589,47 @@ export default function App() {
   const [rankMode, setRankMode] = useState("goals");
   const [savedGames, setSavedGames] = useState([]);
 
+  // ── Secret extras: reveal after tapping the club shield badge 5 times ──────
+  const [secretUnlocked, setSecretUnlocked] = useState(false);
+  const [extrasMode, setExtrasMode] = useState("began");
+  const tapRef = React.useRef({ count: 0, timer: null });
+  const tapBadge = () => {
+    if (secretUnlocked) return;
+    const t = tapRef.current;
+    t.count += 1;
+    if (t.timer) clearTimeout(t.timer);
+    t.timer = setTimeout(() => { t.count = 0; }, 1500); // taps must be within 1.5s of each other
+    if (t.count >= 5) {
+      t.count = 0;
+      setSecretUnlocked(true);
+      setMode("extras");
+    }
+  };
+
+  // ── Hard refresh: clear caches + service worker, then reload from the cloud ──
+  const [refreshing, setRefreshing] = useState(false);
+  const hardRefresh = async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      // Drop the stored app-version marker so the fresh load re-checks it
+      try { localStorage.removeItem("thunade_app_version"); } catch(e) {}
+      // Clear all caches (PWA / service-worker caches)
+      if (window.caches && caches.keys) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      // Unregister service workers so the next load fetches everything fresh
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+    } catch(e) {}
+    // Cache-busted reload so the browser can't serve a stale page
+    const url = window.location.pathname + "?r=" + Date.now();
+    window.location.replace(url);
+  };
+
   // Load saved games on mount, then poll the shared cloud so games logged by
   // other people appear automatically within ~20s (no manual refresh needed).
   useEffect(() => {
@@ -3307,15 +3661,20 @@ export default function App() {
   // from storage, and always includes anyone who appears in a game.
   const [roster, setRoster] = useState([...PLAYER_NAMES]);
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    const loadRoster = async () => {
       try {
         const stored = await Storage.get("thunade_players");
-        if (stored) {
+        if (!cancelled && stored) {
           const parsed = JSON.parse(stored);
-          setRoster([...new Set([...PLAYER_NAMES, ...parsed])].sort());
+          const next = [...new Set([...PLAYER_NAMES, ...parsed])].sort();
+          setRoster(prev => JSON.stringify(prev) !== JSON.stringify(next) ? next : prev);
         }
       } catch(e) {}
-    })();
+    };
+    loadRoster();
+    const interval = setInterval(loadRoster, 20000); // keep the roster in sync across devices
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   // ── App-wide display settings (admin-controlled) ──────────────────────────
@@ -3339,10 +3698,11 @@ export default function App() {
   // Keep the global hide-ratings flag in sync with settings
   setHideRatings(!!settings.hideRatings);
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    const loadProfiles = async () => {
       try {
         const stored = await Storage.get("thunade_profiles");
-        if (stored) {
+        if (!cancelled && stored) {
           // Merge stored profiles over the hardcoded defaults so manually-set
           // ability/fitness is kept, but baked-in ages are never lost.
           const parsed = JSON.parse(stored);
@@ -3350,10 +3710,13 @@ export default function App() {
           Object.keys(parsed).forEach(name => {
             merged[name] = { ...DEFAULT_PROFILES[name], ...parsed[name] };
           });
-          setPlayerProfiles(merged);
+          setPlayerProfiles(prev => JSON.stringify(prev) !== JSON.stringify(merged) ? merged : prev);
         }
       } catch(e) {}
-    })();
+    };
+    loadProfiles();
+    const interval = setInterval(loadProfiles, 20000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   // Compute all stats dynamically from seeded + logged games
@@ -3388,10 +3751,11 @@ export default function App() {
 
   return (
     <div style={{ minHeight:"100vh", width:"100%", maxWidth:"100vw", overflowX:"hidden", background:"#0d1117", color:"#f9fafb", fontFamily:"'Inter','Segoe UI',sans-serif", paddingBottom:40, boxSizing:"border-box" }}>
+      <style>{`@keyframes thuSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       <div style={{ background:"linear-gradient(180deg,#111827 0%,#0d1117 100%)", borderBottom:"1px solid #1f2937", padding:"14px 20px 0", position:"sticky", top:0, zIndex:10, width:"100%", boxSizing:"border-box", overflowX:"hidden" }}>
         <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-          {/* Club shield badge */}
-          <svg width="52" height="52" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Club shield badge — tap 5× to reveal the secret extras */}
+          <svg onClick={tapBadge} width="52" height="52" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ cursor:"pointer", userSelect:"none", WebkitTapHighlightColor:"transparent" }}>
             <clipPath id="lh"><rect x="5" y="3" width="24" height="55"/></clipPath>
             <clipPath id="rh"><rect x="29" y="3" width="24" height="55"/></clipPath>
             <path d="M29 3L5 12V31C5 43 16 52 29 55C42 52 53 43 53 31V12L29 3Z" fill="#cc2200" clipPath="url(#lh)"/>
@@ -3408,6 +3772,15 @@ export default function App() {
               <span style={{ color:"#ef4444" }}>THUN</span><span style={{ color:"#f1f5f9" }}>ADE </span><span style={{ color:"#475569" }}>APP</span>
             </div>
             <div style={{ fontSize:10, color:"#4b5563", letterSpacing:"0.1em" }}>SEASON 2025/26 · EST 1993</div>
+            <button onClick={hardRefresh} disabled={refreshing} title="Force a fresh reload from the cloud" style={{
+              marginTop:6, display:"inline-flex", alignItems:"center", gap:5,
+              padding:"3px 10px", borderRadius:20, border:"1px solid #374151",
+              background:"transparent", color: refreshing ? "#6b7280" : "#9ca3af",
+              fontSize:11, fontWeight:600, cursor: refreshing ? "default" : "pointer",
+            }}>
+              <span style={{ display:"inline-block", animation: refreshing ? "thuSpin 0.8s linear infinite" : "none" }}>🔄</span>
+              {refreshing ? "Refreshing…" : "Sync"}
+            </button>
           </div>
 
           {/* Pixelated photo mascot */}
@@ -3432,8 +3805,8 @@ export default function App() {
           </div>
         </div>
         <div style={{ display:"flex", borderBottom:"1px solid #1f2937", overflowX:"auto", overflowY:"hidden", scrollbarWidth:"none", msOverflowStyle:"none", WebkitOverflowScrolling:"touch" }}>
-          {["player","team","form","h2h","insights","rankings","compare","pick","registry"]
-            .filter(tab => tab === "registry" || !settings.hiddenTabs?.[tab])
+          {["player","team","form","h2h","insights","rankings","compare","pick","registry", ...(secretUnlocked ? ["extras"] : [])]
+            .filter(tab => tab === "registry" || tab === "extras" || !settings.hiddenTabs?.[tab])
             .map(tab => (
             <button key={tab} onClick={() => setMode(tab)} style={{
               padding:"9px 14px", border:"none", background:"transparent",
@@ -3443,7 +3816,7 @@ export default function App() {
               marginBottom:-1, textTransform:"capitalize", letterSpacing:"0.03em",
               whiteSpace:"nowrap", flexShrink:0,
             }}>
-              {tab === "player" ? "👤 My Stats" : tab === "team" ? "👕 Team" : tab === "form" ? "📈 Form" : tab === "h2h" ? "⚔️ H2H" : tab === "rankings" ? "🏆 Rankings" : tab === "compare" ? "📊 Compare" : tab === "pick" ? "🎲 Pick" : tab === "insights" ? "💡 Insights" : "➕ Log"}
+              {tab === "player" ? "👤 My Stats" : tab === "team" ? "👕 Team" : tab === "form" ? "📈 Form" : tab === "h2h" ? "⚔️ H2H" : tab === "rankings" ? "🏆 Rankings" : tab === "compare" ? "📊 Compare" : tab === "pick" ? "🎲 Pick" : tab === "insights" ? "💡 Insights" : tab === "extras" ? "🔓 Extras" : "➕ Log"}
             </button>
           ))}
         </div>
@@ -3476,6 +3849,26 @@ export default function App() {
         {mode === "rankings" && <RankingsView players={PLAYERS} />}
         {mode === "compare" && <CompareView selected={compareList} onToggle={toggleCompare} players={PLAYERS} />}
         {mode === "registry" && <RegistryView onGameSaved={handleGameSaved} savedGames={savedGames} setSavedGames={setSavedGames} settings={settings} updateSettings={updateSettings} />}
+        {mode === "extras" && secretUnlocked && (
+          <div>
+            {/* Extras sub-nav */}
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:20 }}>
+              {[["began","📖 How It Began"],["affil","🔗 Affiliations"],["rolodex","📇 Rolodex"],["notes","📝 Notes"]].map(([id,label]) => (
+                <button key={id} onClick={() => setExtrasMode(id)} style={{
+                  padding:"7px 14px", borderRadius:20,
+                  border: extrasMode===id ? "2px solid #f59e0b" : "1px solid #374151",
+                  background: extrasMode===id ? "rgba(245,158,11,0.15)" : "transparent",
+                  color: extrasMode===id ? "#f59e0b" : "#9ca3af",
+                  cursor:"pointer", fontSize:12, fontWeight: extrasMode===id ? 700 : 400,
+                }}>{label}</button>
+              ))}
+            </div>
+            {extrasMode === "began"   && <HowItBeganView />}
+            {extrasMode === "affil"   && <AffiliationsView />}
+            {extrasMode === "rolodex" && <RolodexView />}
+            {extrasMode === "notes"   && <NotesView />}
+          </div>
+        )}
       </div>
     </div>
   );
